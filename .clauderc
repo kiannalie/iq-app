@@ -1,0 +1,50 @@
+# PROJECT CONTEXT: Podcast & Audiobook Notes App
+
+## Problem Statement
+Podcast and audiobook listeners struggle to capture and organize insights in a way that is tied to the actual audio. Notes often end up scattered across different tools and lose the context of where in the episode or book the idea came from. Users need a seamless way to capture, organize, and revisit timestamped insights tied directly to audio content.
+
+## Target Users
+- **Primary**: Lifelong learners and self-improvement enthusiasts who regularly listen to podcasts/audiobooks and want to retain/apply what they hear.
+- **Secondary**: Professionals who use podcasts/audiobooks for work-related learning (e.g., business leaders, students, creators).
+
+## Success Metrics
+- 🎯 **Activation**: % of new users who save their first timestamped note within Day 1.
+- 🎯 **Engagement**: Avg. number of timestamped notes saved per weekly active user.
+- 🎯 **Retention**: % of users returning to review playlists/notes within 7 days.
+- 🎯 **Satisfaction**: Qualitative feedback via in-app NPS/feedback.
+
+## MVP Scope
+
+### Core Features (must-have):
+1. Listen to podcasts/audiobooks directly in-app
+2. Capture timestamped segments while listening (save the exact moment)
+3. Add notes/action items linked to that timestamp
+4. Organize saved clips into boards/playlists (like Pinterest/Spotify)
+5. Playlist view to browse all saved insights by topic
+
+### Example User Flow:
+- User signs up → selects podcasts they follow → starts listening
+- At minute 3, they capture a segment + write a note → save it into a "Time Management" playlist
+- Later, they open the playlist to see all saved insights organized by theme
+
+## Out of Scope (for v1)
+- Social discovery (seeing what friends listen to)
+- Following podcasters / podcaster interaction
+- Shared playlists/boards
+- Audiobook ingestion beyond public domain or integrations
+
+## Tech Stack
+- React Native (iOS & Android)
+- Supabase (backend, auth, database)
+- Audio player with timestamp precision
+
+## Risks & Assumptions
+- **Content availability**: Podcast API integrations (e.g., Apple, Spotify) may limit in-app playback
+- **User workflow**: Users may find manual note-taking while listening distracting
+- **MVP value**: Timestamped note-taking is the riskiest assumption to validate — will users actually use it consistently?
+- **Technical feasibility**: Capturing precise timestamps + syncing notes reliably may require player-level hooks
+
+## Development Priorities
+1. Build one end-to-end flow: timestamp capture → note → saved playlist
+2. Validate core value proposition before adding features
+3. Focus on smooth audio playback with reliable timestamping
