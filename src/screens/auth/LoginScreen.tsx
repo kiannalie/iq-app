@@ -56,7 +56,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.primary,
+    backgroundColor: '#000751',
     paddingHorizontal: SPACING.xl,
   },
   header: {

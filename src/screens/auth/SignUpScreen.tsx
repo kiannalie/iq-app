@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, Dimensions, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { useAuth } from '../../context/AuthContext';
@@ -55,55 +55,61 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <Text style={styles.headerText}>SIGN UP</Text>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={0}
+    >
+      <View style={styles.contentContainer}>
+        <Text style={styles.headerText}>SIGN UP</Text>
 
-      <View style={styles.circleContainer}>
-        <CircleBackground size={screenWidth * 0.5} />
+        <View style={styles.circleContainer}>
+          <CircleBackground size={screenWidth * 0.4} />
+        </View>
+
+        <View style={styles.formContainer}>
+          <CustomTextInput
+            placeholder="Username"
+            value={username}
+            onChangeText={setUsername}
+            style={styles.input}
+            autoCapitalize="none"
+          />
+
+          <CustomTextInput
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            style={styles.input}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+
+          <CustomTextInput
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            style={styles.input}
+            secureTextEntry
+          />
+
+          <CustomButton
+            title="Create your account"
+            onPress={handleSignUp}
+            variant="secondary"
+            style={styles.createButton}
+            disabled={loading}
+          />
+
+          <CustomButton
+            title="Sign in with Google"
+            onPress={handleGoogleSignIn}
+            variant="google"
+            style={styles.googleButton}
+          />
+        </View>
       </View>
-
-      <View style={styles.formContainer}>
-        <CustomTextInput
-          placeholder="Username"
-          value={username}
-          onChangeText={setUsername}
-          style={styles.input}
-          autoCapitalize="none"
-        />
-
-        <CustomTextInput
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          style={styles.input}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-
-        <CustomTextInput
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          style={styles.input}
-          secureTextEntry
-        />
-
-        <CustomButton
-          title="Create your account"
-          onPress={handleSignUp}
-          variant="secondary"
-          style={styles.createButton}
-          disabled={loading}
-        />
-
-        <CustomButton
-          title="Sign in with Google"
-          onPress={handleGoogleSignIn}
-          variant="google"
-          style={styles.googleButton}
-        />
-      </View>
-    </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -113,26 +119,25 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
   },
   contentContainer: {
-    flexGrow: 1,
+    flex: 1,
     paddingHorizontal: SPACING.xl,
-    paddingTop: SPACING.xxl * 2,
-    paddingBottom: SPACING.xl,
+    paddingTop: SPACING.xxl,
+    paddingBottom: SPACING.md,
   },
   headerText: {
     fontSize: FONT_SIZES.large,
     color: COLORS.white,
     fontWeight: '600',
     textAlign: 'center',
-    marginBottom: SPACING.xl,
+    marginBottom: SPACING.lg,
   },
   circleContainer: {
     alignItems: 'center',
-    marginBottom: SPACING.xl,
+    marginBottom: SPACING.lg,
   },
   formContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
     gap: SPACING.md,
+    marginTop: 'auto',
   },
   input: {
     marginBottom: SPACING.sm,
@@ -142,7 +147,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   googleButton: {
-    marginBottom: SPACING.xl,
+    marginBottom: SPACING.md,
   },
 });
 

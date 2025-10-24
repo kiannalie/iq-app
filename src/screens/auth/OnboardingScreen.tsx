@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Text, ScrollView } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import CategoryChip from '../../components/atoms/CategoryChip';
 import CustomButton from '../../components/atoms/CustomButton';
@@ -38,9 +39,19 @@ const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
     );
   };
 
-  const handleContinue = () => {
-    // Store selected categories in context or async storage
-    navigation.navigate('PodcastSelection');
+  const handleContinue = async () => {
+    try {
+      // Store selected categories in async storage
+      await AsyncStorage.setItem('selected_categories', JSON.stringify(selectedCategories));
+
+      // Mark onboarding as complete
+      await AsyncStorage.setItem('onboarding_complete', 'true');
+      console.log('✅ Onboarding complete! Categories:', selectedCategories);
+
+      // Navigation will automatically update to Main since user is authenticated and onboarding is complete
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+    }
   };
 
   return (

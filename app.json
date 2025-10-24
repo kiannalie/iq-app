@@ -3,6 +3,7 @@
     "name": "IQapp",
     "slug": "iqapp",
     "version": "1.0.0",
+    "scheme": "iqapp",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -29,7 +30,9 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      "expo-font",
+      "expo-web-browser"
     ]
   }
 }

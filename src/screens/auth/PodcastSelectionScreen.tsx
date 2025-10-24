@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Text, ScrollView } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { CommonActions } from '@react-navigation/native';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { useAuth } from '../../context/AuthContext';
 import PodcastCard from '../../components/atoms/PodcastCard';
 import CustomButton from '../../components/atoms/CustomButton';
 import { COLORS, FONT_SIZES, SPACING } from '../../utils/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type PodcastSelectionScreenNavigationProp = StackNavigationProp<
   AuthStackParamList,
@@ -31,6 +33,7 @@ const podcasts = [
 
 const PodcastSelectionScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedPodcasts, setSelectedPodcasts] = useState<string[]>([]);
+  const { user } = useAuth();
 
   const togglePodcast = (podcastId: string) => {
     setSelectedPodcasts(prev =>
@@ -40,11 +43,27 @@ const PodcastSelectionScreen: React.FC<Props> = ({ navigation }) => {
     );
   };
 
-  const handleFinish = () => {
-    // Complete onboarding and navigate to main app
-    // For now, we'll just log the user in (this will be handled by AuthContext)
-    console.log('Onboarding completed with selected podcasts:', selectedPodcasts);
-    // The AuthNavigator will automatically switch to MainNavigator when user is authenticated
+  const handleFinish = async () => {
+    try {
+      console.log('🎯 Finish button pressed!');
+      console.log('Selected podcasts:', selectedPodcasts);
+      console.log('Current user:', user);
+
+      // Save that onboarding is complete
+      await AsyncStorage.setItem('onboarding_complete', 'true');
+      console.log('✅ Saved onboarding_complete to AsyncStorage');
+
+      // Verify it was saved
+      const saved = await AsyncStorage.getItem('onboarding_complete');
+      console.log('Verification - onboarding_complete value:', saved);
+
+      // Force a small delay to ensure state updates
+      setTimeout(() => {
+        console.log('Navigation should update now...');
+      }, 100);
+    } catch (error) {
+      console.error('❌ Error completing onboarding:', error);
+    }
   };
 
   return (

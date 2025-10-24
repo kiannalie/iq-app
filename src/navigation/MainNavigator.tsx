@@ -2,9 +2,9 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import LandingScreen from '../screens/main/LandingScreen';
-import LibraryScreen from '../screens/main/LibraryScreen';
-import { COLORS } from '../utils/constants';
+import HomeNavigator from './HomeNavigator';
+import LibraryNavigator from './LibraryNavigator';
+import { COLORS, FONT_FAMILIES } from '../utils/constants';
 
 // Placeholder screens for other tabs (will be implemented later)
 const ListenScreen = () => (
@@ -39,14 +39,14 @@ const MainNavigator: React.FC = () => {
         },
         tabBarLabelStyle: {
           fontSize: 14,
-          fontWeight: '600',
+          fontFamily: FONT_FAMILIES.semiBold,
           marginTop: 0, // Remove top margin since no icons
         },
       })}
     >
-      <Tab.Screen name="Home" component={LandingScreen} />
+      <Tab.Screen name="Home" component={HomeNavigator} />
       <Tab.Screen name="Listen" component={ListenScreen} />
-      <Tab.Screen name="Library" component={LibraryScreen} />
+      <Tab.Screen name="Library" component={LibraryNavigator} />
     </Tab.Navigator>
   );
 };

@@ -30,20 +30,20 @@ const SideMenu: React.FC<SideMenuProps> = ({
   onFeedback,
   onLogout,
 }) => {
-  const slideAnim = useRef(new Animated.Value(-width)).current;
+  const slideAnim = useRef(new Animated.Value(width)).current;
 
   useEffect(() => {
     if (visible) {
-      // Slide in animation
+      // Slide in animation from right
       Animated.timing(slideAnim, {
         toValue: 0,
         duration: 300,
         useNativeDriver: true,
       }).start();
     } else {
-      // Slide out animation
+      // Slide out animation to right
       Animated.timing(slideAnim, {
-        toValue: -width,
+        toValue: width,
         duration: 250,
         useNativeDriver: true,
       }).start();
@@ -88,41 +88,32 @@ const SideMenu: React.FC<SideMenuProps> = ({
             }
           ]}
         >
-          <TouchableOpacity activeOpacity={1} onPress={() => {}}>
+          <SafeAreaView style={styles.safeArea}>
 
-            {/* Olive/Brown Left Section */}
-            <View style={styles.leftSection} />
-
-            {/* Navy Blue Right Section */}
-            <View style={styles.rightSection}>
-              <SafeAreaView style={styles.safeArea}>
-
-                {/* Header with hamburger menu */}
-                <View style={styles.header}>
-                  <TouchableOpacity style={styles.menuButton} onPress={onClose}>
-                    <Ionicons name="menu" size={24} color={COLORS.white} />
-                  </TouchableOpacity>
-                </View>
-
-                {/* Menu Items */}
-                <View style={styles.menuItems}>
-                  <TouchableOpacity style={styles.menuItem} onPress={handleSettings}>
-                    <Text style={styles.menuItemText}>SETTINGS</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity style={styles.menuItem} onPress={handleFeedback}>
-                    <Text style={styles.menuItemText}>FEEDBACK</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
-                    <Text style={styles.menuItemText}>LOG OUT</Text>
-                  </TouchableOpacity>
-                </View>
-
-              </SafeAreaView>
+            {/* Header with hamburger menu */}
+            <View style={styles.header}>
+              <TouchableOpacity style={styles.menuButton} onPress={onClose}>
+                <Ionicons name="menu" size={24} color={COLORS.white} />
+              </TouchableOpacity>
             </View>
 
-          </TouchableOpacity>
+            {/* Menu Items */}
+            <View style={styles.menuItems}>
+              <TouchableOpacity style={styles.menuItem} onPress={handleSettings}>
+                <Text style={styles.menuItemText}>SETTINGS</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem} onPress={handleFeedback}>
+                <Text style={styles.menuItemText}>FEEDBACK</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
+                <Text style={styles.menuItemText}>LOG OUT</Text>
+              </TouchableOpacity>
+            </View>
+
+          </SafeAreaView>
+
         </Animated.View>
       </TouchableOpacity>
     </Modal>
@@ -133,18 +124,12 @@ const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
   },
   menuContainer: {
     flex: 1,
-    flexDirection: 'row',
     width: width * 0.85, // 85% of screen width
-  },
-  leftSection: {
-    width: '30%',
-    backgroundColor: COLORS.primary, // Olive/brown color
-  },
-  rightSection: {
-    width: '70%',
     backgroundColor: '#1a237e', // Navy blue color
   },
   safeArea: {

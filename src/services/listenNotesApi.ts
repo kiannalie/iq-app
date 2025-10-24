@@ -1,7 +1,10 @@
 // Listen Notes API Service
 // Documentation: https://www.listennotes.com/api/docs/
 
+import Constants from 'expo-constants';
+
 const LISTEN_NOTES_BASE_URL = 'https://listen-api.listennotes.com/api/v2';
+const API_KEY = Constants.expoConfig?.extra?.EXPO_PUBLIC_LISTEN_API_KEY || process.env.EXPO_PUBLIC_LISTEN_API_KEY || 'DEMO_API_KEY';
 
 // TypeScript interfaces based on Listen Notes API
 export interface PodcastEpisode {
@@ -46,12 +49,39 @@ export interface PodcastSearchResponse {
 
 class ListenNotesAPI {
   private apiKey: string;
+  private cache: Map<string, { data: any; timestamp: number }>;
+  private cacheTimeout: number = 1000 * 60 * 30; // 30 minutes
 
-  constructor(apiKey: string = 'DEMO_API_KEY') {
+  constructor(apiKey: string = API_KEY) {
     this.apiKey = apiKey;
+    this.cache = new Map();
+  }
+
+  private getCacheKey(endpoint: string, params: Record<string, any>): string {
+    return `${endpoint}-${JSON.stringify(params)}`;
+  }
+
+  private getFromCache(key: string): any | null {
+    const cached = this.cache.get(key);
+    if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
+      console.log('Using cached data for:', key);
+      return cached.data;
+    }
+    return null;
+  }
+
+  private setCache(key: string, data: any): void {
+    this.cache.set(key, { data, timestamp: Date.now() });
   }
 
   private async makeRequest(endpoint: string, params: Record<string, any> = {}) {
+    // Check cache first
+    const cacheKey = this.getCacheKey(endpoint, params);
+    const cachedData = this.getFromCache(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
     const url = new URL(`${LISTEN_NOTES_BASE_URL}${endpoint}`);
 
     // Add query parameters
@@ -70,10 +100,19 @@ class ListenNotesAPI {
       });
 
       if (!response.ok) {
+        if (response.status === 429) {
+          console.warn('Listen Notes API rate limit reached. Please wait before making more requests.');
+          throw new Error('Rate limit exceeded. Please try again later.');
+        }
         throw new Error(`Listen Notes API error: ${response.status}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+
+      // Cache the successful response
+      this.setCache(cacheKey, data);
+
+      return data;
     } catch (error) {
       console.error('Listen Notes API request failed:', error);
       throw error;

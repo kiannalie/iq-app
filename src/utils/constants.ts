@@ -9,6 +9,14 @@ export const COLORS = {
   transparent: 'transparent',
 };
 
+// Font families
+export const FONT_FAMILIES = {
+  regular: 'Inter_400Regular',
+  medium: 'Inter_500Medium',
+  semiBold: 'Inter_600SemiBold',
+  bold: 'Inter_700Bold',
+};
+
 // Font sizes
 export const FONT_SIZES = {
   small: 12,
