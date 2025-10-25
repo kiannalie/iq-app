@@ -63,11 +63,14 @@ const LibraryScreen: React.FC = () => {
 
   const loadBoards = async () => {
     try {
+      console.log('📚 Loading boards...');
       setLoading(true);
       const loadedBoards = await boardService.getBoards();
+      console.log('📚 Loaded boards:', loadedBoards.length, 'boards');
+      console.log('📚 Board details:', loadedBoards);
       setBoards(loadedBoards);
     } catch (error) {
-      console.error('Error loading boards:', error);
+      console.error('❌ Error loading boards:', error);
     } finally {
       setLoading(false);
     }

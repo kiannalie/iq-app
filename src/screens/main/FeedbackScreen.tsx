@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -77,6 +78,27 @@ const FeedbackScreen: React.FC = () => {
     }
   };
 
+  const handleDonate = async () => {
+    const stripeLink = process.env.EXPO_PUBLIC_STRIPE_PAYMENT_LINK;
+
+    if (!stripeLink || stripeLink === 'your_stripe_payment_link_here') {
+      Alert.alert('Coming Soon', 'Donation feature will be available soon!');
+      return;
+    }
+
+    try {
+      const canOpen = await Linking.canOpenURL(stripeLink);
+      if (canOpen) {
+        await Linking.openURL(stripeLink);
+      } else {
+        Alert.alert('Error', 'Unable to open donation page. Please try again later.');
+      }
+    } catch (error) {
+      console.error('Error opening Stripe link:', error);
+      Alert.alert('Error', 'Unable to open donation page. Please try again later.');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" backgroundColor={COLORS.primary} />
@@ -117,9 +139,16 @@ const FeedbackScreen: React.FC = () => {
         {/* Help us build section */}
         <Text style={styles.helpText}>Help us build ♥</Text>
 
-        {/* Stripe Integration Box */}
-        <View style={styles.stripeContainer}>
-          <Text style={styles.stripeText}>*stripe integration soon</Text>
+        {/* Donation Section */}
+        <View style={styles.donationContainer}>
+          <Text style={styles.donationTitle}>Support Our App</Text>
+          <Text style={styles.donationDescription}>
+            Your donation helps us keep the app running and add new features!
+          </Text>
+          <TouchableOpacity style={styles.donateButton} onPress={handleDonate}>
+            <Ionicons name="heart" size={20} color={COLORS.primary} style={styles.donateIcon} />
+            <Text style={styles.donateButtonText}>Donate Now</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Submit Button */}
@@ -202,20 +231,46 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: SPACING.lg,
   },
-  stripeContainer: {
+  donationContainer: {
     backgroundColor: 'transparent',
     borderWidth: 2,
     borderColor: COLORS.white,
     borderRadius: 12,
     marginHorizontal: SPACING.md,
     paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xl * 2,
+    paddingVertical: SPACING.xl,
     marginBottom: SPACING.xl,
   },
-  stripeText: {
-    fontSize: FONT_SIZES.medium,
+  donationTitle: {
+    fontSize: FONT_SIZES.large,
+    fontWeight: '700',
     color: COLORS.white,
     textAlign: 'center',
+    marginBottom: SPACING.sm,
+  },
+  donationDescription: {
+    fontSize: FONT_SIZES.small,
+    color: COLORS.white + '80',
+    textAlign: 'center',
+    marginBottom: SPACING.lg,
+    lineHeight: 20,
+  },
+  donateButton: {
+    backgroundColor: COLORS.white,
+    borderRadius: 8,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.lg,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  donateIcon: {
+    marginRight: SPACING.sm,
+  },
+  donateButtonText: {
+    fontSize: FONT_SIZES.medium,
+    fontWeight: '700',
+    color: COLORS.primary,
   },
   submitButton: {
     backgroundColor: COLORS.white,

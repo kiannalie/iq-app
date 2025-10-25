@@ -3,7 +3,7 @@
 
 export const DEV_CONFIG = {
   // Toggle between dev mode (mock data) and production mode (real API)
-  USE_MOCK_DATA: true, // Change to false when you want to use real API
+  USE_MOCK_DATA: false, // Change to false when you want to use real API
 
   // Cache settings
   CACHE_DURATION_MS: 1000 * 60 * 30, // 30 minutes

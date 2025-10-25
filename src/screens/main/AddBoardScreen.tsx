@@ -73,16 +73,19 @@ const AddBoardScreen: React.FC = () => {
   const handleFinish = async () => {
     if (boardName.trim()) {
       try {
+        console.log('📝 Creating board:', boardName.trim());
         // Save board to local storage with selected board type
         // If a board type is selected, save it as the first item in the array
         const typesToSave = selectedBoardType
           ? [selectedBoardType, ...boardTypes.filter(t => t.name !== selectedBoardType.name)]
           : boardTypes;
-        await boardService.createBoard(boardName.trim(), typesToSave);
+        console.log('📝 Board types:', typesToSave);
+        const createdBoard = await boardService.createBoard(boardName.trim(), typesToSave);
+        console.log('✅ Board created successfully:', createdBoard);
         // Navigate back to library
         navigation.goBack();
       } catch (error) {
-        console.error('Error saving board:', error);
+        console.error('❌ Error saving board:', error);
         Alert.alert('Error', 'Failed to save board. Please try again.');
       }
     } else {

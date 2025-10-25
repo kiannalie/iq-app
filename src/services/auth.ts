@@ -1,10 +1,18 @@
 import { supabase } from './supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 export interface AuthError {
   message: string;
   code?: string;
 }
+
+// Configure Google Sign-In
+GoogleSignin.configure({
+  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID, // From Google Cloud Console
+  iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID, // Optional: iOS specific client ID
+  offlineAccess: true,
+});
 
 export class AuthService {
   static async signInWithEmail(email: string, password: string) {
@@ -50,23 +58,46 @@ export class AuthService {
 
   static async signInWithGoogle() {
     try {
-      // This will be implemented with @react-native-google-signin/google-signin
-      // For now, return a mock response
-      console.log('Google Sign In - To be implemented');
+      // Check if device supports Google Play Services (Android)
+      await GoogleSignin.hasPlayServices();
 
-      // Mock successful response for development
-      const mockUser = {
-        id: 'mock-user-id',
-        email: 'user@gmail.com',
-        name: 'Test User',
-      };
+      // Sign in with Google
+      const result = await GoogleSignin.signIn();
 
-      // Store mock user data
-      await AsyncStorage.setItem('user', JSON.stringify(mockUser));
+      // Check if sign-in was successful
+      if (result.type === 'cancelled') {
+        throw new Error('Google Sign-In was cancelled');
+      }
 
-      return { user: mockUser };
-    } catch (error) {
+      const { idToken } = result.data;
+
+      if (!idToken) {
+        throw new Error('No ID token received from Google');
+      }
+
+      // Sign in to Supabase with the Google ID token
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token: idToken,
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
+    } catch (error: any) {
       console.error('Google sign in error:', error);
+
+      // Handle specific error cases
+      if (error.code === 'SIGN_IN_CANCELLED') {
+        throw new Error('Google Sign-In was cancelled');
+      } else if (error.code === 'IN_PROGRESS') {
+        throw new Error('Google Sign-In is already in progress');
+      } else if (error.code === 'PLAY_SERVICES_NOT_AVAILABLE') {
+        throw new Error('Google Play Services not available');
+      }
+
       throw error;
     }
   }
@@ -94,7 +125,15 @@ export class AuthService {
 
   static async signOut() {
     try {
+      // Sign out from Supabase
       await supabase.auth.signOut();
+
+      // Sign out from Google if signed in
+      const isSignedIn = await GoogleSignin.isSignedIn();
+      if (isSignedIn) {
+        await GoogleSignin.signOut();
+      }
+
       await AsyncStorage.removeItem('user');
     } catch (error) {
       console.error('Sign out error:', error);

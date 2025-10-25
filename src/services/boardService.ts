@@ -31,6 +31,7 @@ class BoardService {
   async getBoards(): Promise<Board[]> {
     try {
       const userId = await getCurrentUserId();
+      console.log('🔑 Getting boards for user ID:', userId);
       if (!userId) return [];
 
       // Get boards
@@ -40,6 +41,7 @@ class BoardService {
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
+      console.log('📊 Boards query result:', { boardsData, boardsError });
       if (boardsError) throw boardsError;
       if (!boardsData) return [];
 
@@ -78,6 +80,7 @@ class BoardService {
   async createBoard(name: string, types: BoardType[]): Promise<Board> {
     try {
       const userId = await getCurrentUserId();
+      console.log('🔑 User ID:', userId);
       if (!userId) throw new Error('User not authenticated');
 
       // Insert board
@@ -90,6 +93,7 @@ class BoardService {
         .select()
         .single();
 
+      console.log('📊 Board insert result:', { boardData, boardError });
       if (boardError) throw boardError;
       if (!boardData) throw new Error('Failed to create board');
 

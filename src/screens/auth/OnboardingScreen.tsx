@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
+import { useAuth } from '../../context/AuthContext';
 import CategoryChip from '../../components/atoms/CategoryChip';
 import CustomButton from '../../components/atoms/CustomButton';
 import { COLORS, FONT_SIZES, SPACING } from '../../utils/constants';
@@ -30,6 +31,7 @@ const categories = [
 
 const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const { refreshUserData } = useAuth();
 
   const toggleCategory = (category: string) => {
     setSelectedCategories(prev =>
@@ -48,9 +50,17 @@ const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
       await AsyncStorage.setItem('onboarding_complete', 'true');
       console.log('✅ Onboarding complete! Categories:', selectedCategories);
 
-      // Navigation will automatically update to Main since user is authenticated and onboarding is complete
+      // Force a refresh to trigger AppNavigator re-check
+      await refreshUserData();
+
+      // Small delay to ensure state updates, then force navigation
+      setTimeout(() => {
+        // The app should now navigate to Main automatically
+        console.log('🔄 Onboarding refresh complete');
+      }, 100);
     } catch (error) {
       console.error('Error completing onboarding:', error);
+      Alert.alert('Error', 'Failed to complete onboarding. Please try again.');
     }
   };
 

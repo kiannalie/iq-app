@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useNavigation, useNavigationState } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../context/AuthContext';
 import AuthNavigator from './AuthNavigator';
@@ -13,13 +14,13 @@ export type RootStackParamList = {
 const Stack = createStackNavigator<RootStackParamList>();
 
 const AppNavigator: React.FC = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, userData } = useAuth();
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [checkingOnboarding, setCheckingOnboarding] = useState(true);
 
   useEffect(() => {
     checkOnboarding();
-  }, [user]);
+  }, [user, userData]);
 
   const checkOnboarding = async () => {
     try {

@@ -2,10 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { supabase } from '../config/supabase';
 import { Session } from '@supabase/supabase-js';
 import { userDataService, UserData } from '../services/userDataService';
-import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri } from 'expo-auth-session';
-
-WebBrowser.maybeCompleteAuthSession();
+import { AuthService } from '../services/auth';
 
 interface User {
   id: string;
@@ -151,54 +148,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signInWithGoogle = async () => {
     try {
-      // Use Expo's auth redirect URL which works with Google OAuth
-      const redirectUrl = makeRedirectUri({
-        scheme: 'iqapp',
-        path: 'auth/callback',
-      });
-
-      console.log('Redirect URL:', redirectUrl);
-
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: redirectUrl,
-          skipBrowserRedirect: true,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data.url) {
-        console.log('Opening OAuth URL:', data.url);
-        const result = await WebBrowser.openAuthSessionAsync(
-          data.url,
-          redirectUrl
-        );
-
-        console.log('OAuth result:', result);
-
-        if (result.type === 'success') {
-          const url = result.url;
-          // Extract the session from the URL
-          const hashParams = url.split('#')[1];
-          if (hashParams) {
-            const params = new URLSearchParams(hashParams);
-            const accessToken = params.get('access_token');
-            const refreshToken = params.get('refresh_token');
-
-            if (accessToken && refreshToken) {
-              await supabase.auth.setSession({
-                access_token: accessToken,
-                refresh_token: refreshToken,
-              });
-              console.log('Session set successfully');
-            }
-          }
-        }
-      }
-
-      console.log('Google Sign In initiated');
+      // Use native Google Sign-In (no browser redirect needed)
+      await AuthService.signInWithGoogle();
+      console.log('Google Sign In successful');
     } catch (error: any) {
       console.error('Google sign in error:', error.message);
       throw new Error(error.message || 'Failed to sign in with Google');
@@ -222,8 +174,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      // Use AuthService to sign out (handles both Supabase and Google Sign-In)
+      await AuthService.signOut();
 
       setUser(null);
       setUserData(null);

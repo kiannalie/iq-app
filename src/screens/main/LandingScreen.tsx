@@ -77,9 +77,9 @@ const LandingScreen: React.FC = () => {
         ]);
 
         setRecentEpisodes(listenNotesApi.getMockRecentListens()); // Keep mock for now since we need user history
-        setRecommendations(businessResponse.results.slice(0, 2));
-        setBusinessPodcasts(businessResponse.results.slice(0, 4));
-        setHealthPodcasts(healthResponse.results.slice(0, 4));
+        setRecommendations(businessResponse?.results?.slice(0, 2) || []);
+        setBusinessPodcasts(businessResponse?.results?.slice(0, 4) || []);
+        setHealthPodcasts(healthResponse?.results?.slice(0, 4) || []);
       }
     } catch (error) {
       console.error('Error loading initial data:', error);
